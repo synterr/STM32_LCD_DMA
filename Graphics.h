@@ -29,7 +29,7 @@ vec3 project(vec3 point);
   
 void rotate(vec3* point, float x, float y, float z);
 
-void set_buf_ref(uint16_t* buf_r);
+void set_buf_ref(uint8_t* buf_r);
 
 //void GFX_DrawLine(int x1, int y1, int x2, int y2, uint8_t ucColor);
 //void GFX_DrawChar(int x, int y, char chr, uint8_t color, uint8_t background, uint8_t size);

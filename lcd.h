@@ -1,6 +1,6 @@
 #ifndef LCD_H
 #define LCD_H
-
+#include "stm32f4xx.h" 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -228,26 +228,28 @@ void ST7789_SpiInit(void);
 void ST7789_Init(void);
 void ST7789_SetRotation(uint8_t m);
 void ST7789_Fill_Color(uint16_t color);
-void ST7789_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
-void ST7789_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint16_t color);
-void ST7789_DrawPixel_4px(uint16_t x, uint16_t y, uint16_t color);
-
+void ST7789_Clear(void);
+void ST7789_ClearChunk(uint8_t chunk_num);
+void ST7789_DrawPixel(uint16_t x, uint16_t y, uint32_t color);
+void ST7789_Display(bool clear_background);
+void ST7789_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint32_t color);
+void ST7789_DrawPixel_4px(uint16_t x, uint16_t y, uint32_t color);
 /* Graphical functions. */
-void ST7789_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-void ST7789_DrawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-void ST7789_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r, uint16_t color);
+void ST7789_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
+void ST7789_DrawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
+void ST7789_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r, uint32_t color);
 void ST7789_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t *data);
 void ST7789_InvertColors(uint8_t invert);
 
 /* Text functions. */
-//void ST7789_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor);
-//void ST7789_WriteString(uint16_t x, uint16_t y, const char *str, FontDef font, uint16_t color, uint16_t bgcolor);
+//void ST7789_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint32_t bgcolor);
+//void ST7789_WriteString(uint16_t x, uint16_t y, const char *str, FontDef font, uint16_t color, uint32_t bgcolor);
 
 /* Extented Graphical functions. */
-void ST7789_DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
-void ST7789_DrawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint16_t color);
-void ST7789_DrawFilledTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint16_t color);
-void ST7789_DrawFilledCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
+void ST7789_DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color);
+void ST7789_DrawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint32_t color);
+void ST7789_DrawFilledTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint32_t color);
+void ST7789_DrawFilledCircle(int16_t x0, int16_t y0, int16_t r, uint32_t color);
 
 /* Command functions */
 void ST7789_TearEffect(uint8_t tear);

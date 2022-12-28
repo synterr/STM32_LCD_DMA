@@ -91,9 +91,13 @@ int main (void) {
   dma_spi_enable();
   ST7789_SpiInit();
   graphics_init();
+  
+  //ST7789_Clear();
 
-  ST7789_Fill(10,10,12, 12, MAGENTA);
-  ST7789_DrawPixel(100,10,0);
+  ST7789_Display(true);
+
+//  ST7789_DrawPixel(100,10,0);
+
   //cube size
   float cs = 1.0f; 
   float cn = -1.0f; // negative or zero
@@ -135,13 +139,23 @@ int main (void) {
     if (get_transfer() == 0)
     {
       cnt++;
-      
-      //SSD1327_Display();
+      //ST7789_Clear();
+      uint8_t dots = 16;
+      for (uint8_t k = 0; k < dots; k++)
+      {
+        cnt--;
+        ST7789_DrawFilledCircle((uint16_t)(88.0f+ 82.0f *sinf(-cnt/20.0f+2*3.1415f/dots*k)), (uint16_t)(88.0f+ 82.0f *cosf(-cnt/20.0f+2*3.1415f/dots*k)), 5,
+         0x00);
+        cnt++;
+        ST7789_DrawFilledCircle((uint16_t)(88.0f+ 82.0f *sinf(-cnt/20.0f+2*3.1415f/dots*k)), (uint16_t)(88.0f+ 82.0f *cosf(-cnt/20.0f+2*3.1415f/dots*k)), 5,
+         ((uint32_t)(128+128 *sinf(-cnt/7.0f+2*3.1415f/dots*k)))+ ((uint32_t)(128+128 *sinf(-cnt/8.0f+2*3.1415f/dots*k))<<16) + ((uint32_t)(128+128 *sinf(-cnt/11.0f+2*3.1415f/dots*k))<<8));
+      }
+      ST7789_Display(false);
     }
     //Write to buffer here
     if (get_transfer() == 1)
     {
-      
+      //ST7789_Fill((uint16_t)(88.0f+ 50.0f *sinf(-cnt/10.0f)),(uint16_t)(88.0f+ 50.0f *cosf(-cnt/10.0f)),16, 16, 0x00ff00);
     }
 
     

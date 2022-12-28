@@ -18,7 +18,7 @@ void spi_init (void)
 	
   SPI1->CR1 |= SPI_CR1_MSTR;  // Master Mode
 	
-  SPI1->CR1 |= (5<<3);  // BR[2:0] = 010: fPCLK/8, PCLK2 = 80MHz, SPI clk = 6MHz
+  SPI1->CR1 |= (0<<3);  // BR[2:0] = 010: fPCLK/8, PCLK2 = 80MHz, SPI clk = 6MHz
 	
   //MSB first
   SPI1->CR1 &= ~(SPI_CR1_LSBFIRST);

@@ -32,7 +32,7 @@ void graphics_init(void){
 		matProj.m[3][3] = 0.0f;
 }
 
-void set_buf_ref(uint16_t* buf_r)
+void set_buf_ref(uint8_t* buf_r)
 {
   buf_ref = buf_r;
 }
