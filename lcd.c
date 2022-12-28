@@ -260,7 +260,6 @@ void ST7789_Fill_Color(uint16_t color)
 	uint16_t i;
 	ST7789_SetAddressWindow(0, 0, ST7789_WIDTH - 1, ST7789_HEIGHT - 1);
 	ST7789_Select();
-
 		uint16_t j;
 		for (i = 0; i < ST7789_WIDTH; i++)
 				for (j = 0; j < ST7789_HEIGHT; j++) {
@@ -268,6 +267,21 @@ void ST7789_Fill_Color(uint16_t color)
           uint8_t data[] = {color>>16, color>>8, color & 0xFF};
 					ST7789_WriteData(data, sizeof(data));
 				}
+	ST7789_UnSelect();
+}
+
+void ST7789_ClearAll(void)
+{
+
+	ST7789_SetAddressWindow(0, 0, ST7789_WIDTH - 1, ST7789_HEIGHT - 1);
+	ST7789_Select();
+  ST7789_DC_Set();  
+		uint16_t x, y;
+		for (y = 0; y < ST7789_HEIGHT; y++){
+        uint8_t data[ST7789_WIDTH*3]={0x00};
+        dma_start(data, sizeof(data));
+        while (get_transfer() == 1){}
+      }
 	ST7789_UnSelect();
 }
 

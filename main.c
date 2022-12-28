@@ -92,7 +92,8 @@ int main (void) {
   ST7789_SpiInit();
   graphics_init();
   
-  //ST7789_Clear();
+  //Slow method of clearing whole screen
+  ST7789_ClearAll();
 
   ST7789_Display(true);
 

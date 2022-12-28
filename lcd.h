@@ -230,6 +230,7 @@ void ST7789_SetRotation(uint8_t m);
 void ST7789_Fill_Color(uint16_t color);
 void ST7789_Clear(void);
 void ST7789_ClearChunk(uint8_t chunk_num);
+void ST7789_ClearAll(void);
 void ST7789_DrawPixel(uint16_t x, uint16_t y, uint32_t color);
 void ST7789_Display(bool clear_background);
 void ST7789_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint32_t color);
