@@ -6,19 +6,20 @@
                          // Real resolution is 176 x 176 after trim
  #define CHUNKS_NUM 2    // chunks for dma
 
-#define DMA_MIN_SIZE (ST7789_HEIGHT - MEM_TRIM*2)/CHUNKS_NUM
 /* If you're using DMA, then u need a "framebuffer" to store datas to be displayed.
  * If your MCU don't have enough RAM, please avoid using DMA(or set 5 to 1).
  * And if your MCU have enough RAM(even larger than full-frame size),
  * Then you can specify the framebuffer size to the full resolution below.
  */
 
- #define HOR_LEN 	  ST7789_WIDTH - MEM_TRIM*2	//	Alse mind the resolution of your screen!
- #define RGB_BYTES 	3   // We need 3 bytes for RGB
+#define HOR_LEN 	      (ST7789_WIDTH  - MEM_TRIM*2)
+#define VER_LEN 	      (ST7789_HEIGHT - MEM_TRIM*2)
+#define RGB_BYTES 	    3   // We need 3 bytes for RGB
+#define DMA_MIN_SIZE    (VER_LEN)/CHUNKS_NUM
+#define BUFF_SIZE       (HOR_LEN) * (VER_LEN) * RGB_BYTES
 
-static uint32_t buff_size = (ST7789_WIDTH - MEM_TRIM*2) * HOR_LEN * RGB_BYTES;
-static uint8_t  buffer[(ST7789_WIDTH - MEM_TRIM*2) * (HOR_LEN) * RGB_BYTES];
-static uint32_t dma_chunk_size = (ST7789_WIDTH - MEM_TRIM*2) * DMA_MIN_SIZE * RGB_BYTES;
+static uint8_t  buffer[BUFF_SIZE];
+static uint32_t dma_chunk_size = (HOR_LEN) * DMA_MIN_SIZE * RGB_BYTES;
 
 /**
  * @brief Write command to ST7789 controller
@@ -44,16 +45,7 @@ static void ST7789_WriteData(uint8_t *data, size_t data_size)
 	ST7789_Select();
 	ST7789_DC_Set();
 
-	// split data in small chunks because HAL can't send more than 64K at once
-
-	while (data_size > 0) {
-		uint16_t chunk_size = data_size > 65535 ? 65535 : data_size;
-		
-		spi_transmit(data, chunk_size);
-
-		data += chunk_size;
-		data_size -= chunk_size;
-	}
+  spi_transmit(data, (uint16_t)data_size);
 
 	ST7789_UnSelect();
 }
@@ -132,10 +124,8 @@ void ST7789_SpiInit(void)
   gpio_init(GPIO_PIN_OLED_CS);
   gpio_init(GPIO_PIN_OLED_DC);
 
-	//ST7789_Reset();
-
 	ST7789_Init();
-  //set_buf_ref(buffer);
+  set_buf_ref(buffer);
 }
 /**
  * @brief Initialize ST7789 controller
@@ -155,11 +145,11 @@ void ST7789_Init(void)
     ST7789_WriteCommand(ST7789_COLMOD);		//	Set color mode
     ST7789_WriteSmallData(ST7789_COLOR_MODE_16bit);
   	ST7789_WriteCommand(0xB2);				//	Porch control
-	{
-		uint8_t data[] = {0x0C, 0x0C, 0x00, 0x33, 0x33};
-		ST7789_WriteData(data, sizeof(data));
-	}
-	ST7789_SetRotation(ST7789_ROTATION);	//	MADCTL (Display Rotation)
+    {
+      uint8_t data[] = {0x0C, 0x0C, 0x00, 0x33, 0x33};
+      ST7789_WriteData(data, sizeof(data));
+    }
+    ST7789_SetRotation(ST7789_ROTATION);	//	MADCTL (Display Rotation)
 	
 	/* Internal LCD Voltage generator settings */
     ST7789_WriteCommand(0XB7);				//	Gate Control
@@ -181,25 +171,24 @@ void ST7789_Init(void)
     ST7789_WriteSmallData (0xA1);			//	Default value
 	/**************** Division line ****************/
 
-	ST7789_WriteCommand(0xE0);
-	{
-		uint8_t data[] = {0xD0, 0x04, 0x0D, 0x11, 0x13, 0x2B, 0x3F, 0x54, 0x4C, 0x18, 0x0D, 0x0B, 0x1F, 0x23};
-		ST7789_WriteData(data, sizeof(data));
-	}
+    ST7789_WriteCommand(0xE0);
+    {
+      uint8_t data[] = {0xD0, 0x04, 0x0D, 0x11, 0x13, 0x2B, 0x3F, 0x54, 0x4C, 0x18, 0x0D, 0x0B, 0x1F, 0x23};
+      ST7789_WriteData(data, sizeof(data));
+    }
 
     ST7789_WriteCommand(0xE1);
-	{
-		uint8_t data[] = {0xD0, 0x04, 0x0C, 0x11, 0x13, 0x2C, 0x3F, 0x44, 0x51, 0x2F, 0x1F, 0x1F, 0x20, 0x23};
-		ST7789_WriteData(data, sizeof(data));
-	}
+    {
+      uint8_t data[] = {0xD0, 0x04, 0x0C, 0x11, 0x13, 0x2C, 0x3F, 0x44, 0x51, 0x2F, 0x1F, 0x1F, 0x20, 0x23};
+      ST7789_WriteData(data, sizeof(data));
+    }
+    
     ST7789_WriteCommand (ST7789_INVON);		//	Inversion ON
-	ST7789_WriteCommand (ST7789_SLPOUT);	//	Out of sleep mode
+    ST7789_WriteCommand (ST7789_SLPOUT);	//	Out of sleep mode
   	ST7789_WriteCommand (ST7789_NORON);		//	Normal Display on
   	ST7789_WriteCommand (ST7789_DISPON);	//	Main screen turned on	
 
-  //memset(buffer, 0xFF, sizeof(buffer));
-
-	//ST7789_Fill_Color(BLACK);				//	Fill with Black.
+  	//ST7789_Fill_Color(BLACK);				//	Fill with Black.
 }
 
 void ST7789_Display(bool clear_background)
@@ -207,14 +196,6 @@ void ST7789_Display(bool clear_background)
 //#ifdef DOUBLE_BUFFER
 // // memcpy(dma_buffer, buffer, SSD1327_BUFFERSIZE);
 //#endif
-  
-
-	//spi_transmit((uint8_t*)&buffer, SSD1327_BUFFERSIZE);
-	//gpio_up(GPIO_PIN_OLED_CS);
-  //dma_spi_enable();
-  
-
-
   
 //#ifdef DOUBLE_BUFFER
 // // dma_start(dma_buffer, SSD1327_BUFFERSIZE);
@@ -239,15 +220,8 @@ void ST7789_Display(bool clear_background)
     }
     ST7789_ClearChunk(CHUNKS_NUM-1);
   }
-//dma_start(buffer+dma_chunk_size*2, dma_chunk_size);
-//    while (get_transfer() == 1){}
-//  dma_start(buffer+dma_chunk_size*3, dma_chunk_size);
-    //while (get_transfer() == 1){}
-      
-   //ST7789_UnSelect();
-//#endif
- 
-
+  
+  //ST7789_UnSelect();
 }
 
 /**

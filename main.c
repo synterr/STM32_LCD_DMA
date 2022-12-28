@@ -153,11 +153,10 @@ int main (void) {
       }
       ST7789_Display(false);
     }
-    //Write to buffer here
-    if (get_transfer() == 1)
-    {
-      //ST7789_Fill((uint16_t)(88.0f+ 50.0f *sinf(-cnt/10.0f)),(uint16_t)(88.0f+ 50.0f *cosf(-cnt/10.0f)),16, 16, 0x00ff00);
-    }
+//    //Write to buffer here
+//    if (get_transfer() == 1)
+//    {
+//    }
 
     
     NVIC_EnableIRQ(EXTI15_10_IRQn);  
